@@ -1,5 +1,5 @@
-
-import Products from './products';
+"use client"
+import Products from './products/page';
 
 export default function Page() {
 
