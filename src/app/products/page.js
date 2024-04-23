@@ -12,8 +12,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DrawerRoutes from '../components/drawerRoutes';
 import Link from 'next/link'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useEffect, useState } from 'react';
-
+import { v4 as uuidv4 } from 'uuid';
 export default function Products() {
 
   const [products, setProducts] = useState([]);
@@ -34,8 +35,44 @@ export default function Products() {
   };
 
 
+  const handleBuyProduct = (id) => {
+    if (id) {
+      // Função para buscar o produto pelo ID no LocalStorage
+      const getProductById = (productId) => {
+        const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+        const foundProduct = storedProducts.find(product => product.id === productId);
+        if (foundProduct) {
+          // Obtém os produtos existentes do localStorage
+          const existingOrders = JSON.parse(localStorage.getItem('orders')) || [];
 
+          // Verifica se o produto já existe nas orders
+          const existingOrderIndex = existingOrders.findIndex(ordem => ordem.id_produto === foundProduct.id);
 
+          if (existingOrderIndex !== -1) {
+            // Produto já existe, aumenta a quantidade
+            existingOrders[existingOrderIndex].quantidade += 1;
+          } else {
+            // Cria um novo objeto representando o produto, pois não existe nas orders
+            const newOrdem = {
+              id: uuidv4(),
+              id_produto: foundProduct.id,
+              nome: foundProduct.nome,
+              descricao: foundProduct.descricao,
+              preco: foundProduct.preco,
+              quantidade: 1,
+            };
+            // Adiciona o novo produto ao array de produtos existentes
+            existingOrders.push(newOrdem);
+          }
+
+          // Salva o array de produtos atualizado no localStorage
+          localStorage.setItem('orders', JSON.stringify(existingOrders));
+        }
+      };
+
+      getProductById(id);
+    }
+  };
 
   return (
     <Container fixed>
@@ -75,7 +112,7 @@ export default function Products() {
               </CardContent>
               <CardActions>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                  <Button size="small" variant="contained" color="success">Comprar</Button>
+                  <Button size="small" variant="contained" onClick={() => handleBuyProduct(product.id)} color="success"><ShoppingCartIcon /> Comprar</Button>
                   <Typography variant="h5" component="h2">
                     R$ {product.preco}
                   </Typography>

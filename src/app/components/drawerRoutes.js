@@ -33,8 +33,8 @@ export default function DrawerRoutes() {
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
       <List>
         {items.map((item) => (
-          <Link href={item.href}>
-            <ListItem key={item.label} disablePadding>
+          <Link href={item.href} key={item.label}>
+            <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
                   {item.icon}
