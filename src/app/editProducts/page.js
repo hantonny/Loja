@@ -14,7 +14,6 @@ export default function EditProducts() {
 
   useEffect(() => {
 
-    // Function to extract query parameters from URL
     const getQueryParams = () => {
       const queryParams = new URLSearchParams(window.location.search);
       return queryParams.get('id');

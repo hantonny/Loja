@@ -15,9 +15,6 @@ import DrawerRoutes from '../components/drawerRoutes';
 
 export default function Orders() {
 
-
-
-
   return (
 
     <Container fixed>

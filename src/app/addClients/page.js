@@ -11,62 +11,62 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 
-export default function AddProducts() {
+export default function AddClients() {
 
   const [nome, setNome] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [preco, setPreco] = useState('');
-  const [urlImagem, setUrlImagem] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [endereco, setEndereco] = useState('');
 
   // Funções para atualizar o estado quando o usuário digitar nos campos
   const handleNomeChange = (event) => {
     setNome(event.target.value);
   };
 
-  const handleDescricaoChange = (event) => {
-    setDescricao(event.target.value);
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
   };
 
-  const handlePrecoChange = (event) => {
-    setPreco(event.target.value);
+  const handleTelefoneChange = (event) => {
+    setTelefone(event.target.value);
   };
 
-  const handleUrlImagemChange = (event) => {
-    setUrlImagem(event.target.value);
+  const handleEnderecoChange = (event) => {
+    setEndereco(event.target.value);
   };
 
 
   // Função para lidar com o envio do formulário
   const handleSubmit = (event) => {
     // Verifica se os campos estão vazios
-    if (!nome || !descricao || !preco || !urlImagem) {
+    if (!nome || !email || !telefone || !endereco) {
       return;
     }
     event.preventDefault();
 
-    // Cria um novo objeto representando o produto
-    const newProduct = {
+    // Cria um novo objeto representando o cliente
+    const newClient = {
       id: uuidv4(),
       nome: nome,
-      descricao: descricao,
-      preco: preco,
-      urlImagem: urlImagem
+      email: email,
+      telefone: telefone,
+      endereco: endereco
     };
 
-    // Obtém os produtos existentes do localStorage
-    const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+    // Obtém os clientes existentes do localStorage
+    const existingClients = JSON.parse(localStorage.getItem('clients')) || [];
 
-    // Adiciona o novo produto ao array de produtos existentes
-    const updatedProducts = [...existingProducts, newProduct];
+    // Adiciona o novo cliente ao array de clientes existentes
+    const updatedClients = [...existingClients, newClient];
 
-    // Salva o array de produtos atualizado no localStorage
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
+    // Salva o array de clientes atualizado no localStorage
+    localStorage.setItem('clients', JSON.stringify(updatedClients));
 
     // Limpa os campos após o envio
     setNome('');
-    setDescricao('');
-    setPreco('');
-    setUrlImagem('');
+    setEmail('');
+    setTelefone('');
+    setEndereco('');
   };
 
 
@@ -75,7 +75,7 @@ export default function AddProducts() {
       <DrawerRoutes></DrawerRoutes>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2, marginTop: 10 }}>
         <Typography variant="h4" component="h2">
-          Adicionar Produtos
+          Adicionar Clientes
         </Typography>
       </Box>
       <Box
@@ -97,25 +97,25 @@ export default function AddProducts() {
           onChange={handleNomeChange}
         />
         <TextField
-          id="descricao"
-          label="Descrição"
+          id="email"
+          label="Email"
           variant="outlined"
-          value={descricao}
-          onChange={handleDescricaoChange}
+          value={email}
+          onChange={handleEmailChange}
         />
         <TextField
-          id="preco"
-          label="Preço"
+          id="telefone"
+          label="Telefone"
           variant="outlined"
-          value={preco}
-          onChange={handlePrecoChange}
+          value={telefone}
+          onChange={handleTelefoneChange}
         />
         <TextField
-          id="urlImagem"
-          label="URL Imagem"
+          id="endereco"
+          label="Endereço"
           variant="outlined"
-          value={urlImagem}
-          onChange={handleUrlImagemChange}
+          value={endereco}
+          onChange={handleEnderecoChange}
         />
         <Button variant="contained" color="success" onClick={handleSubmit}>
           Salvar
