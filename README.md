@@ -7,6 +7,10 @@
 <h2>Loja</h2>
 <h3>CRUD de produtos, clientes e pedidos</h3>
 
+## 💻 Demostração
+
+-   https://loja-hantonny.vercel.app/
+
 ## 💻 Tecnologias
 
 <h3>Este projeto foi desenvolvido com as seguintes tecnologias:</h3>

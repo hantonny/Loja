@@ -1,12 +1,7 @@
 "use client"
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,7 +16,19 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useEffect, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
-import Link from 'next/link'
+import Modal from '@mui/material/Modal';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 
 export default function Orders() {
@@ -31,6 +38,11 @@ export default function Orders() {
 
   const [editOrderId, setEditOrderId] = useState(null);
   const [editQuantity, setEditQuantity] = useState('');
+
+  const [open, setOpen] = useState(false);
+  const [idOrdem, setIdOrdem] = useState();
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     // Busca os pedidos armazenados no localStorage
@@ -66,19 +78,47 @@ export default function Orders() {
 
 
   const handleDeleteOrdem = (id) => {
-    // Filtra os pedidos, mantendo apenas aqueles que não correspondem ao ID excluído
-    const updatedOrder = orders.filter(order => order.id !== id);
-    // Atualiza o estado com os pedidos restantes
-    setOrders(updatedOrder);
-    // Atualiza o localStorage com os pedidos restantes
-    localStorage.setItem('orders', JSON.stringify(updatedOrder));
+    setIdOrdem(id)
+    handleOpen()
   };
+
+  function deleteOrdem() {
+    if (open) {
+      // Filtra os pedidos, mantendo apenas aqueles que não correspondem ao ID excluído
+      const updatedOrder = orders.filter(order => order.id !== idOrdem);
+      // Atualiza o estado com os pedidos restantes
+      setOrders(updatedOrder);
+      // Atualiza o localStorage com os pedidos restantes
+      localStorage.setItem('orders', JSON.stringify(updatedOrder));
+      handleClose()
+    }
+  }
 
 
 
   return (
 
     <Container fixed>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" color="text.primary">
+            Tem certeza que deseja excluir este pedido?
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 2 }}>
+
+            <Button size="small" variant="contained" color="primary" onClick={handleClose}>Cancelar</Button>
+
+
+            <Button size="small" variant="contained" color="error" onClick={deleteOrdem}>Excluir</Button>
+
+          </Box>
+        </Box>
+      </Modal>
       <DrawerRoutes></DrawerRoutes>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2 }}>
         <Typography variant="h4" component="h2">

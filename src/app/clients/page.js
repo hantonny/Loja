@@ -11,11 +11,29 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DrawerRoutes from '../components/drawerRoutes';
 import Link from 'next/link'
+import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';
+
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 export default function Clients() {
 
   const [clients, setClients] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [idclient, setIdClient] = useState();
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     // Busca os clientes armazenados no localStorage
@@ -24,18 +42,44 @@ export default function Clients() {
   }, []);
 
   const handleDeleteClients = (id) => {
-    // Filtra os clientes, mantendo apenas aqueles que não correspondem ao ID excluído
-    const updatedClientes = clients.filter(client => client.id !== id);
-    // Atualiza o estado com os clientes restantes
-    setClients(updatedClientes);
-    // Atualiza o localStorage com os clientes restantes
-    localStorage.setItem('clients', JSON.stringify(updatedClientes));
+    setIdClient(id);
+    handleOpen()
+
   };
+
+  function deleteClient() {
+    if (open) {
+      // Filtra os clientes, mantendo apenas aqueles que não correspondem ao ID excluído
+      const updatedClientes = clients.filter(client => client.id !== idclient);
+      // Atualiza o estado com os clientes restantes
+      setClients(updatedClientes);
+      // Atualiza o localStorage com os clientes restantes
+      localStorage.setItem('clients', JSON.stringify(updatedClientes));
+      handleClose()
+    }
+  }
+
 
 
 
   return (
     <Container fixed>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" color="text.primary">
+            Tem certeza que deseja excluir este cliente?
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 2 }}>
+            <Button size="small" variant="contained" color="primary" onClick={handleClose}>Cancelar</Button>
+            <Button size="small" variant="contained" color="error" onClick={deleteClient}>Excluir</Button>
+          </Box>
+        </Box>
+      </Modal>
       <DrawerRoutes></DrawerRoutes>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2 }}>
         <Typography variant="h4" component="h2">

@@ -10,14 +10,34 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import Modal from '@mui/material/Modal';
 import DrawerRoutes from '../components/drawerRoutes';
 import Link from 'next/link'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+
 export default function Products() {
 
   const [products, setProducts] = useState([]);
+
+  const [open, setOpen] = useState(false);
+  const [idproduct, setIdproduct] = useState();
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     // Busca os produtos armazenados no localStorage
@@ -26,13 +46,21 @@ export default function Products() {
   }, []);
 
   const handleDeleteProduct = (id) => {
-    // Filtra os produtos, mantendo apenas aqueles que não correspondem ao ID excluído
-    const updatedProducts = products.filter(product => product.id !== id);
-    // Atualiza o estado com os produtos restantes
-    setProducts(updatedProducts);
-    // Atualiza o localStorage com os produtos restantes
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
+    setIdproduct(id)
+    handleOpen();
   };
+
+  function deleteProduct() {
+    if (open) {
+      // Filtra os produtos, mantendo apenas aqueles que não correspondem ao ID excluído
+      const updatedProducts = products.filter(product => product.id !== idproduct);
+      // Atualiza o estado com os produtos restantes
+      setProducts(updatedProducts);
+      // Atualiza o localStorage com os produtos restantes
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
+      handleClose()
+    }
+  }
 
 
   const handleBuyProduct = (id) => {
@@ -75,7 +103,28 @@ export default function Products() {
   };
 
   return (
+
     <Container fixed>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" color="text.primary">
+            Tem certeza que deseja excluir este produto?
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 2 }}>
+
+            <Button size="small" variant="contained" color="primary" onClick={handleClose}>Cancelar</Button>
+
+
+            <Button size="small" variant="contained" color="error" onClick={deleteProduct}>Excluir</Button>
+
+          </Box>
+        </Box>
+      </Modal>
       <DrawerRoutes></DrawerRoutes>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2 }}>
         <Typography variant="h4" component="h2">

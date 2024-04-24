@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
 import Box from '@mui/material/Box';
-
+import Alert from '@mui/material/Alert';
 import DrawerRoutes from '../components/drawerRoutes';
 import { TextField } from '@mui/material';
 import { useState } from 'react';
@@ -17,6 +17,9 @@ export default function AddClients() {
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereco] = useState('');
+
+  const [alertSuccess, setAlertSuccess] = useState('none')
+  const [alertError, setAlertError] = useState('none')
 
   // Funções para atualizar o estado quando o usuário digitar nos campos
   const handleNomeChange = (event) => {
@@ -38,41 +41,57 @@ export default function AddClients() {
 
   // Função para lidar com o envio do formulário
   const handleSubmit = (event) => {
-    // Verifica se os campos estão vazios
-    if (!nome || !email || !telefone || !endereco) {
-      return;
+    try {
+      // Verifica se os campos estão vazios
+      if (!nome || !email || !telefone || !endereco) {
+        setAlertError("flex")
+        setAlertSuccess("none")
+        return;
+      }
+      event.preventDefault();
+
+      // Cria um novo objeto representando o cliente
+      const newClient = {
+        id: uuidv4(),
+        nome: nome,
+        email: email,
+        telefone: telefone,
+        endereco: endereco
+      };
+
+      // Obtém os clientes existentes do localStorage
+      const existingClients = JSON.parse(localStorage.getItem('clients')) || [];
+
+      // Adiciona o novo cliente ao array de clientes existentes
+      const updatedClients = [...existingClients, newClient];
+
+      // Salva o array de clientes atualizado no localStorage
+      localStorage.setItem('clients', JSON.stringify(updatedClients));
+
+      // Limpa os campos após o envio
+      setNome('');
+      setEmail('');
+      setTelefone('');
+      setEndereco('');
+      setAlertSuccess("flex")
+      setAlertError("none")
+    } catch (error) {
+      setAlertError("flex")
+      setAlertSuccess("none")
     }
-    event.preventDefault();
 
-    // Cria um novo objeto representando o cliente
-    const newClient = {
-      id: uuidv4(),
-      nome: nome,
-      email: email,
-      telefone: telefone,
-      endereco: endereco
-    };
-
-    // Obtém os clientes existentes do localStorage
-    const existingClients = JSON.parse(localStorage.getItem('clients')) || [];
-
-    // Adiciona o novo cliente ao array de clientes existentes
-    const updatedClients = [...existingClients, newClient];
-
-    // Salva o array de clientes atualizado no localStorage
-    localStorage.setItem('clients', JSON.stringify(updatedClients));
-
-    // Limpa os campos após o envio
-    setNome('');
-    setEmail('');
-    setTelefone('');
-    setEndereco('');
   };
 
 
   return (
     <Container fixed>
       <DrawerRoutes></DrawerRoutes>
+      <Alert variant="filled" severity="success" style={{ display: alertSuccess }}>
+        Cliente cadastrado com sucesso!
+      </Alert>
+      <Alert variant="filled" severity="error" style={{ display: alertError }}>
+        Erro ao cadastrar cliente!
+      </Alert>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2, marginTop: 10 }}>
         <Typography variant="h4" component="h2">
           Adicionar Clientes

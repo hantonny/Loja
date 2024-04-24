@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import DrawerRoutes from '../components/drawerRoutes';
+import Alert from '@mui/material/Alert';
 import { TextField } from '@mui/material';
 import { useState, useEffect } from 'react';
 
@@ -14,6 +15,9 @@ export default function EditClients() {
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereco] = useState('');
+
+  const [alertSuccess, setAlertSuccess] = useState('none')
+  const [alertError, setAlertError] = useState('none')
 
   useEffect(() => {
 
@@ -61,30 +65,46 @@ export default function EditClients() {
   };
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    try {
+      event.preventDefault();
 
-    if (!nome || !email || !telefone || !endereco) {
-      return;
+      if (!nome || !email || !telefone || !endereco) {
+        setAlertError("flex")
+        setAlertSuccess("none")
+        return;
+      }
+
+      const updatedClient = {
+        id: id,
+        nome: nome,
+        email: email,
+        telefone: telefone,
+        endereco: endereco
+      };
+
+
+      const existingClients = JSON.parse(localStorage.getItem('clients')) || [];
+      const updatedClients = [...existingClients.filter(client => client.id !== id), updatedClient];
+
+      localStorage.setItem('clients', JSON.stringify(updatedClients));
+      setAlertSuccess("flex")
+      setAlertError("none")
+    } catch (error) {
+      setAlertError("flex")
+      setAlertSuccess("none")
     }
 
-    const updatedClient = {
-      id: id,
-      nome: nome,
-      email: email,
-      telefone: telefone,
-      endereco: endereco
-    };
-
-
-    const existingClients = JSON.parse(localStorage.getItem('clients')) || [];
-    const updatedClients = [...existingClients.filter(client => client.id !== id), updatedClient];
-
-    localStorage.setItem('clients', JSON.stringify(updatedClients));
   };
 
   return (
     <Container fixed>
       <DrawerRoutes />
+      <Alert variant="filled" severity="success" style={{ display: alertSuccess }}>
+        Cliente editado com sucesso!
+      </Alert>
+      <Alert variant="filled" severity="error" style={{ display: alertError }}>
+        Erro ao editar cliente!
+      </Alert>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2, marginTop: 10 }}>
         <Typography variant="h4" component="h2">
           Editar Cliente

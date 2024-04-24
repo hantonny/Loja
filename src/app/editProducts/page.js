@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { TextField, Button, Typography, Container, Box } from '@mui/material';
 import DrawerRoutes from '../components/drawerRoutes';
+import Alert from '@mui/material/Alert';
 
 export default function EditProducts() {
 
@@ -11,6 +12,9 @@ export default function EditProducts() {
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
   const [urlImagem, setUrlImagem] = useState('');
+
+  const [alertSuccess, setAlertSuccess] = useState('none')
+  const [alertError, setAlertError] = useState('none')
 
   useEffect(() => {
 
@@ -60,25 +64,35 @@ export default function EditProducts() {
 
   // Função para lidar com o envio do formulário
   const handleSubmit = (event) => {
-    event.preventDefault();
+    try {
+      event.preventDefault();
 
-    // Verifica se os campos estão vazios
-    if (!nome || !descricao || !preco || !urlImagem) {
-      return;
+      // Verifica se os campos estão vazios
+      if (!nome || !descricao || !preco || !urlImagem) {
+        setAlertError("flex")
+        setAlertSuccess("none")
+        return;
+      }
+
+      const newProduct = {
+        id: id,
+        nome: nome,
+        descricao: descricao,
+        preco: preco,
+        urlImagem: urlImagem
+      };
+
+      const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+      const updatedProducts = [...existingProducts.filter(product => product.id !== id), newProduct];
+
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
+      setAlertSuccess("flex")
+      setAlertError("none")
+    } catch (error) {
+      setAlertError("flex")
+      setAlertSuccess("none")
     }
 
-    const newProduct = {
-      id: id,
-      nome: nome,
-      descricao: descricao,
-      preco: preco,
-      urlImagem: urlImagem
-    };
-
-    const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
-    const updatedProducts = [...existingProducts.filter(product => product.id !== id), newProduct];
-
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
 
 
   };
@@ -86,6 +100,12 @@ export default function EditProducts() {
   return (
     <Container fixed>
       <DrawerRoutes />
+      <Alert variant="filled" severity="success" style={{ display: alertSuccess }}>
+        Produto editado com sucesso!
+      </Alert>
+      <Alert variant="filled" severity="error" style={{ display: alertError }}>
+        Erro ao editar produto!
+      </Alert>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2, marginTop: 10 }}>
         <Typography variant="h4" component="h2">
           Editar Produto

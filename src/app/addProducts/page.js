@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
 import Box from '@mui/material/Box';
-
+import Alert from '@mui/material/Alert';
 import DrawerRoutes from '../components/drawerRoutes';
 import { TextField } from '@mui/material';
 import { useState } from 'react';
@@ -17,6 +17,8 @@ export default function AddProducts() {
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
   const [urlImagem, setUrlImagem] = useState('');
+  const [alertSuccess, setAlertSuccess] = useState('none')
+  const [alertError, setAlertError] = useState('none')
 
   // Funções para atualizar o estado quando o usuário digitar nos campos
   const handleNomeChange = (event) => {
@@ -38,41 +40,57 @@ export default function AddProducts() {
 
   // Função para lidar com o envio do formulário
   const handleSubmit = (event) => {
-    // Verifica se os campos estão vazios
-    if (!nome || !descricao || !preco || !urlImagem) {
-      return;
+    try {
+      // Verifica se os campos estão vazios
+      if (!nome || !descricao || !preco || !urlImagem) {
+        setAlertError("flex")
+        setAlertSuccess("none")
+        return;
+      }
+      event.preventDefault();
+
+      // Cria um novo objeto representando o produto
+      const newProduct = {
+        id: uuidv4(),
+        nome: nome,
+        descricao: descricao,
+        preco: preco,
+        urlImagem: urlImagem
+      };
+
+      // Obtém os produtos existentes do localStorage
+      const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+      // Adiciona o novo produto ao array de produtos existentes
+      const updatedProducts = [...existingProducts, newProduct];
+
+      // Salva o array de produtos atualizado no localStorage
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+      // Limpa os campos após o envio
+      setNome('');
+      setDescricao('');
+      setPreco('');
+      setUrlImagem('');
+      setAlertSuccess("flex")
+      setAlertError("none")
+    } catch (error) {
+      setAlertError("flex")
+      setAlertSuccess("none")
     }
-    event.preventDefault();
 
-    // Cria um novo objeto representando o produto
-    const newProduct = {
-      id: uuidv4(),
-      nome: nome,
-      descricao: descricao,
-      preco: preco,
-      urlImagem: urlImagem
-    };
-
-    // Obtém os produtos existentes do localStorage
-    const existingProducts = JSON.parse(localStorage.getItem('products')) || [];
-
-    // Adiciona o novo produto ao array de produtos existentes
-    const updatedProducts = [...existingProducts, newProduct];
-
-    // Salva o array de produtos atualizado no localStorage
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
-
-    // Limpa os campos após o envio
-    setNome('');
-    setDescricao('');
-    setPreco('');
-    setUrlImagem('');
   };
 
 
   return (
     <Container fixed>
       <DrawerRoutes></DrawerRoutes>
+      <Alert variant="filled" severity="success" style={{ display: alertSuccess }}>
+        Produto cadastrado com sucesso!
+      </Alert>
+      <Alert variant="filled" severity="error" style={{ display: alertError }}>
+        Erro ao cadastrar produto!
+      </Alert>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '98%', marginBottom: 2, marginTop: 10 }}>
         <Typography variant="h4" component="h2">
           Adicionar Produtos
